@@ -42,52 +42,42 @@ const HomePage = () => {
           .slice(0, 3);
         
         setEvents(upcomingEventsData);
-        
-        // Fetch announcements
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch events:', err);
+        setError('Failed to load events. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+      
+      // Fetch announcements separately (non-blocking)
+      try {
         const announcementsData = await announcementService.getAllAnnouncements({
           isPublished: true
         });
-        
-        // Get announcements data, ensuring we have an array
         const announcementsArray = Array.isArray(announcementsData) 
           ? announcementsData 
           : announcementsData.data || [];
-        
-        // Sort announcements by date (newest first)
         announcementsArray.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
-        // Take only the first 3 announcements
-        const latestAnnouncements = announcementsArray.slice(0, 3);
-        
-        setAnnouncements(latestAnnouncements);
-        
-        // Fetch top performers for leaderboard
-        try {
-          const topPerformersData = await leaderboardService.getTopPerformers();
-          
-          // Format the data to match the expected structure for the leaderboard table
-          const formattedLeaderboardData = topPerformersData
-            .slice(0, 5) // Take only top 5 performers
-            .map((performer, index) => ({
-              id: performer.userId || index + 1,
-              name: performer.userName,
-              event: `${performer.eventCount} ${performer.eventCount === 1 ? 'Event' : 'Events'}`,
-              score: performer.totalScore
-            }));
-          
-          setLeaderboardData(formattedLeaderboardData);
-        } catch (leaderboardErr) {
-          console.error('Failed to fetch leaderboard data:', leaderboardErr);
-          // Keep the leaderboard empty if there's an error
-          setLeaderboardData([]);
-        }
-        
-        setError(null);
+        setAnnouncements(announcementsArray.slice(0, 3));
       } catch (err) {
-        console.error('Failed to fetch data:', err);
-        setError('Failed to load data. Please try again later.');
-      } finally {
-        setLoading(false);
+        console.error('Failed to fetch announcements:', err);
+      }
+      
+      // Fetch leaderboard separately (non-blocking)
+      try {
+        const topPerformersData = await leaderboardService.getTopPerformers();
+        const formattedLeaderboardData = topPerformersData
+          .slice(0, 5)
+          .map((performer, index) => ({
+            id: performer.userId || index + 1,
+            name: performer.userName,
+            event: `${performer.eventCount} ${performer.eventCount === 1 ? 'Event' : 'Events'}`,
+            score: performer.totalScore
+          }));
+        setLeaderboardData(formattedLeaderboardData);
+      } catch (err) {
+        console.error('Failed to fetch leaderboard:', err);
       }
     };
     
@@ -109,7 +99,7 @@ const HomePage = () => {
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="ml-3">
@@ -172,7 +162,7 @@ const HomePage = () => {
                           {(() => {
                             const eventDate = new Date(event.date);
                             const today = new Date();
-                            today.setHours(0, 0, 0, 0); // Reset time to start of day
+                            today.setHours(0, 0, 0, 0);
                             
                             const tomorrow = new Date(today);
                             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -200,7 +190,7 @@ const HomePage = () => {
                         </div>
                         <div className="flex items-center text-gray-600 mb-2">
                           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m4 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                           </svg>
                           <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                         </div>
@@ -209,13 +199,13 @@ const HomePage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                           </svg>
-                          <span>{event.location}</span>
+                          <span>{event.venue || event.location}</span>
                         </div>
                         <div className="flex items-center text-gray-600 mb-4">
                           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                           </svg>
-                          <span>{event.participants ? `${event.participants.length} / ${event.capacity} registered` : `0 / ${event.capacity} registered`}</span>
+                          <span>{event.registeredCount} / {event.maxParticipants} registered</span>
                         </div>
                         <div className="flex space-x-2">
                           <Link to={`/events/${event._id}`} className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-2 rounded-md transition duration-300">
@@ -229,9 +219,8 @@ const HomePage = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-2 text-center py-12">
+                  <div className="col-span-2 text-center px-12">
                     <p className="text-gray-500 text-lg">No upcoming events found.</p>
-                    
                   </div>
                 )}
               </div>
@@ -272,7 +261,7 @@ const HomePage = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-4">
+                  <div className="text-center px-4">
                     <p className="text-gray-500">No announcements available.</p>
                   </div>
                 )}
