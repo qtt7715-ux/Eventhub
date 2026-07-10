@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for auth service
-const API_URL = 'https://eventhub-auth-service.onrender.com/api/auth';
+const API_URL = 'https://eventhub-vf9z.onrender.com/api/auth';
 // const API_URL = 'http://localhost:8001/api/auth';
 
 // Create axios instance with default config
