@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL for event service
-const API_URL = 'https://eventhub-event-service.onrender.com/api/events';
+const API_URL = 'https://eventhub-vf9z.onrender.com/api/events';
 
 // const API_URL = 'http://localhost:8002/api/events';
 // Create axios instance with default config
@@ -38,14 +38,13 @@ const eventService = {
 
   // Get event by ID
   getEventById: async (eventId) => {
-    // Validate eventId before making API call
     if (!eventId || eventId === 'undefined' || eventId === 'null') {
       throw new Error('Invalid _id: ' + eventId);
     }
 
     try {
       const response = await eventApi.get(`/${eventId}`);
-      return response.data.data; // Extract the data from the nested structure
+      return response.data.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch event details');
     }
@@ -55,7 +54,7 @@ const eventService = {
   createEvent: async (eventData) => {
     try {
       const response = await eventApi.post('/', eventData);
-      return response.data.data || response.data; // Extract the data from the nested structure if it exists
+      return response.data.data || response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to create event');
     }
@@ -125,7 +124,7 @@ const eventService = {
 
     try {
       const response = await eventApi.get(`/${eventId}/participants`);
-      return response.data.data || []; // Extract the data from the nested structure
+      return response.data.data || [];
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch participants');
     }
