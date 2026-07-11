@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Only connect if user is authenticated
+    // Only connect if user is authenticated and VITE_NOTIFICATION_SERVICE_URL is defined
     if (!isAuthenticated) {
       if (socket) {
         socket.disconnect();
@@ -23,8 +23,14 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
+    const socketUrl = import.meta.env.VITE_NOTIFICATION_SERVICE_URL;
+    if (!socketUrl) {
+      // Quietly ignore if not defined or set to bypass socket.io spamming on local dev/Netlify
+      return;
+    }
+
     // Connect to socket server
-    const socketInstance = io(import.meta.env.VITE_NOTIFICATION_SERVICE_URL || 'http://localhost:8003', {
+    const socketInstance = io(socketUrl, {
       withCredentials: true,
       auth: {
         token: localStorage.getItem('token')
@@ -33,7 +39,6 @@ export const SocketProvider = ({ children }) => {
 
     // Set up event listeners
     socketInstance.on('connect', () => {
-      // console.log('Socket connected');
       setConnected(true);
       
       // Join user role room

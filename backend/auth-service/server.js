@@ -10,18 +10,10 @@ dotenv.config();
 const authRoutes = require('./src/routes/auth.routes');
 const adminRoutes = require('./src/routes/admin.routes');
 const eventRoutes = require('./src/routes/event.routes');
+const leaderboardRoutes = require('./src/routes/leaderboard.routes');
+const announcementRoutes = require('./src/routes/announcement.routes');
 
 const app = express();
-
-// Set up rate limiter: max 100 requests per 15 minutes per IP
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 100,
-//   standardHeaders: true,
-//   legacyHeaders: false,
-//   message: 'Too many requests from this IP, please try again after 15 minutes'
-// });
-// app.use(limiter);
 
 // Middleware
 app.use(helmet());
@@ -41,6 +33,8 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -56,5 +50,5 @@ module.exports = app;
 
 const PORT = process.env.PORT || 8001;
 app.listen(PORT, () => {
-  console.log(`Auth service running on port ${PORT}`);
+  console.log(`Unified backend service running on port ${PORT}`);
 });

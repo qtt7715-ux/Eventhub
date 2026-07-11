@@ -28,7 +28,7 @@ const Footer = () => {
             <ul className="space-y-2 text-gray-400">
               <li>Email: info@eventhub.com</li>
               <li>Phone: +91 9876543210</li>
-              <li>Address: Acharya Institute of Technology, Bangalore</li>
+              <li>Address: Delhi Technological University</li>
             </ul>
           </div>
         </div>
