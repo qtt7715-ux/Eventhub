@@ -1,10 +1,13 @@
 import axios from 'axios';
 
-const API_URL = 'https://eventhub-notification-service.onrender.com/api/announcements';
+const API_URL = 'https://eventhub-vf9z.onrender.com/api/announcements';
 
 // Create axios instance
 const announcementAPI = axios.create({
   baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // Add request interceptor to add auth token
