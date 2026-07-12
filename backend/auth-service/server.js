@@ -12,6 +12,7 @@ const adminRoutes = require('./src/routes/admin.routes');
 const eventRoutes = require('./src/routes/event.routes');
 const leaderboardRoutes = require('./src/routes/leaderboard.routes');
 const announcementRoutes = require('./src/routes/announcement.routes');
+const settingsRoutes = require('./src/routes/settings.routes');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
